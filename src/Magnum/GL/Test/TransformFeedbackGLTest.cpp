@@ -551,6 +551,8 @@ void TransformFeedbackGLTest::interleaved() {
         }
     } shader;
 
+// TODO: test setTransformFeedbackOutputs() -- non-null-terminated (and non-global on NV&Windows)
+
     Buffer input{Buffer::TargetHint::Array};
     input.setData(inputData, BufferUsage::StaticDraw);
     Buffer output{Buffer::TargetHint::TransformFeedback};

@@ -194,6 +194,10 @@ void ShaderGLTest::addSource() {
     #endif
 }
 
+#error verify that version is not copied,   \
+    non-global / non-null-term strings are copied \
+    .. could we avoid copying non-null-term? :O
+
 void ShaderGLTest::addSourceNoVersion() {
     Shader shader(Version::None, Shader::Type::Fragment);
 

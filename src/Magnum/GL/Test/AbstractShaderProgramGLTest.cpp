@@ -407,6 +407,11 @@ void AbstractShaderProgramGLTest::linkFailure() {
 void AbstractShaderProgramGLTest::uniformNotFound() {
     MyPublicShader program;
 
+#error test uniform location, \
+        uniform block index, \
+        ... \
+       with non-null-terminated stirngs
+
     Shader vert(
         #ifndef MAGNUM_TARGET_GLES
         #ifndef CORRADE_TARGET_APPLE
