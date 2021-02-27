@@ -314,7 +314,7 @@ AbstractShaderProgram& AbstractShaderProgram::operator=(AbstractShaderProgram&& 
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-std::string AbstractShaderProgram::label() const {
+Containers::String AbstractShaderProgram::label() const {
     #ifndef MAGNUM_TARGET_GLES2
     return Context::current().state().debug.getLabelImplementation(GL_PROGRAM, _id);
     #else
@@ -322,7 +322,7 @@ std::string AbstractShaderProgram::label() const {
     #endif
 }
 
-AbstractShaderProgram& AbstractShaderProgram::setLabelInternal(const Containers::ArrayView<const char> label) {
+AbstractShaderProgram& AbstractShaderProgram::setLabel(const Containers::StringView label) {
     #ifndef MAGNUM_TARGET_GLES2
     Context::current().state().debug.labelImplementation(GL_PROGRAM, _id, label);
     #else

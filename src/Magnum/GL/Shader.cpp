@@ -679,7 +679,7 @@ Shader::~Shader() {
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-std::string Shader::label() const {
+Containers::String Shader::label() const {
     #ifndef MAGNUM_TARGET_GLES2
     return Context::current().state().debug.getLabelImplementation(GL_SHADER, _id);
     #else
@@ -687,7 +687,7 @@ std::string Shader::label() const {
     #endif
 }
 
-Shader& Shader::setLabelInternal(const Containers::ArrayView<const char> label) {
+Shader& Shader::setLabel(const Containers::StringView label) {
     #ifndef MAGNUM_TARGET_GLES2
     Context::current().state().debug.labelImplementation(GL_SHADER, _id, label);
     #else

@@ -581,7 +581,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          *      @def_gl{SHADER_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
-        std::string label() const;
+        Containers::String label() const;
 
         /**
          * @brief Set shader label
@@ -596,14 +596,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          *      with @def_gl{SHADER_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
-        Shader& setLabel(const std::string& label) {
-            return setLabelInternal({label.data(), label.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> Shader& setLabel(const char(&label)[size]) {
-            return setLabelInternal({label, size - 1});
-        }
+        Shader& setLabel(Containers::StringView label);
         #endif
 
         /** @brief Shader type */
@@ -645,8 +638,6 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         bool compile();
 
     private:
-        Shader& setLabelInternal(Containers::ArrayView<const char> label);
-
         void MAGNUM_GL_LOCAL addSourceImplementationDefault(std::string source);
         #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
         void MAGNUM_GL_LOCAL addSourceImplementationEmscriptenPthread(std::string source);

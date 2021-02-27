@@ -200,6 +200,8 @@ void TransformFeedbackGLTest::label() {
         MAGNUM_VERIFY_NO_GL_ERROR();
     }
 
+#error TODO test no null terminated
+
     feedback.setLabel("MyXfb");
     {
         #ifdef MAGNUM_TARGET_GLES

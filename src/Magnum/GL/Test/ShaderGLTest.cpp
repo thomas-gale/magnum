@@ -156,6 +156,8 @@ void ShaderGLTest::label() {
     #endif
     CORRADE_COMPARE(shader.label(), "");
 
+#error TODO test no null terminated
+
     shader.setLabel("MyShader");
     CORRADE_COMPARE(shader.label(), "MyShader");
 
