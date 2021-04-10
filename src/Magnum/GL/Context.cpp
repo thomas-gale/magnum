@@ -670,9 +670,13 @@ void Context::create() {
     if(!tryCreate()) std::exit(1);
 }
 
+// TG - Modified to hard select GLES3 always...
+// This is because I was struggling to get the right flags in the original upstream implementation.
 bool Context::tryCreate() {
     CORRADE_ASSERT(_version == Version::None,
         "Platform::Context::tryCreate(): context already created", false);
+
+    std::cout << "TOMO: Trying to create context!" << std::endl;
 
     /* Load GL function pointers. Pass this instance to it so it can use it for
        potential driver-specific workarounds. */
@@ -680,71 +684,7 @@ bool Context::tryCreate() {
 
     /* Initialize to something predictable to avoid crashes on improperly
        created contexts */
-    GLint majorVersion = 0, minorVersion = 0;
-
-    /* Get version on ES 3.0+/WebGL 2.0+ */
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
-
-    /* ES 3.0+ */
-    #ifndef MAGNUM_TARGET_WEBGL
-    glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
-    glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
-
-    /* WebGL 2.0, treat it as ES 3.0 */
-    #else
-    const std::string version = versionString();
-    if(version.find("WebGL 2") == std::string::npos) {
-        Error{} << "GL::Context: unsupported version string:" << version;
-        return false;
-    }
-    majorVersion = 3;
-    minorVersion = 0;
-    #endif
-
-    /* On GL 2.1 and ES 2.0 there is no GL_{MAJOR,MINOR}_VERSION, we have to
-       parse version string. On desktop GL we have no way to check version
-       without version (duh) so we work around that by checking for invalid
-       enum error. */
-    #else
-    #ifndef MAGNUM_TARGET_GLES2
-    glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
-    const auto versionNumberError = Renderer::error();
-    if(versionNumberError == Renderer::Error::NoError)
-        glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
-    else
-    #endif
-    {
-        #ifndef MAGNUM_TARGET_GLES2
-        CORRADE_ASSERT(versionNumberError == Renderer::Error::InvalidEnum,
-            "GL::Context: cannot retrieve OpenGL version:" << versionNumberError, false);
-        #endif
-
-        /* Allow ES2 context on driver that reports ES3 as supported */
-        const std::string version = versionString();
-        #ifndef MAGNUM_TARGET_GLES
-        if(version.compare(0, 3, "2.1") == 0)
-        #elif defined(MAGNUM_TARGET_WEBGL)
-        /* Internet Explorer currently has 0.94 */
-        if(version.find("WebGL 1") != std::string::npos ||
-           version.find("WebGL 0") != std::string::npos)
-        #else
-        if(version.find("OpenGL ES 2.0") != std::string::npos ||
-           /* It is possible to use Magnum compiled for ES2 on ES3 contexts */
-           version.find("OpenGL ES 3.") != std::string::npos)
-        #endif
-        {
-            majorVersion = 2;
-            #ifndef MAGNUM_TARGET_GLES
-            minorVersion = 1;
-            #else
-            minorVersion = 0;
-            #endif
-        } else {
-            Error{} << "GL::Context: unsupported version string:" << version;
-            return false;
-        }
-    }
-    #endif
+    GLint majorVersion = 3, minorVersion = 0;
 
     /* Compose the version enum */
     _version = GL::version(majorVersion, minorVersion);
@@ -756,14 +696,7 @@ bool Context::tryCreate() {
         "GL::Context: cannot retrieve OpenGL version:" << error, false);
     #endif
 
-    /* Check that the version is supported (now it probably is, but be sure) */
-    #ifndef MAGNUM_TARGET_GLES
-    if(!isVersionSupported(Version::GL210))
-    #elif defined(MAGNUM_TARGET_GLES2)
-    if(_version != Version::GLES200)
-    #else
     if(!isVersionSupported(Version::GLES300))
-    #endif
     {
         #ifndef MAGNUM_TARGET_GLES
         Error{} << "GL::Context: unsupported OpenGL version" << std::make_pair(majorVersion, minorVersion);
@@ -776,15 +709,8 @@ bool Context::tryCreate() {
         return false;
     }
 
-    /* Context flags are supported since GL 3.0 */
-    #ifndef MAGNUM_TARGET_GLES
-    /**
-     * @todo According to KHR_debug specs this should be also present in ES2
-     *      if KHR_debug is available, but in headers it is nowhere to be found
-     */
-    if(isVersionSupported(Version::GL300))
-        glGetIntegerv(GL_CONTEXT_FLAGS, reinterpret_cast<GLint*>(&_flags));
-    #endif
+    // if(isVersionSupported(Version::GL300))
+    //     glGetIntegerv(GL_CONTEXT_FLAGS, reinterpret_cast<GLint*>(&_flags));
 
     constexpr struct {
         Version version;
